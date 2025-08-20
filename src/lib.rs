@@ -109,6 +109,13 @@ pub fn clean(response: &[u8]) -> Utf8Result {
     Ok(response.contains("OK") && !response.contains("FOUND"))
 }
 
+///
+/// 
+pub fn virusname(response: &[u8]) -> Result<String, &str> {
+    Ok(str::from_utf8(&response).unwrap().to_string().replace("stream: ", "").replace("FOUND\0", ""))
+    
+}
+
 /// Use a TCP connection to communicate with a ClamAV server
 #[derive(Copy, Clone)]
 pub struct Tcp<A: ToSocketAddrs> {
