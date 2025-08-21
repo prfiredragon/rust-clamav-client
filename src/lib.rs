@@ -109,7 +109,7 @@ pub fn clean(response: &[u8]) -> Utf8Result {
     Ok(response.contains("OK") && !response.contains("FOUND"))
 }
 
-///
+/// Return the Virus Name
 /// 
 pub fn virusname(response: &[u8]) -> Result<String, &str> {
     Ok(str::from_utf8(&response).unwrap().to_string().replace("stream: ", "").replace("FOUND\0", ""))
