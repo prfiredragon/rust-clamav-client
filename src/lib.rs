@@ -335,6 +335,6 @@ pub fn shutdown<T: TransportProtocol>(connection: T) -> IoResult {
 /// ```
 ///
 pub fn get_stats<T: TransportProtocol>(connection: T) -> IoResult {
-    let stream = connection.connect().await?;
-    send_command(stream, STATS, None).await
+    let stream = connection.connect()?;
+    send_command(stream, STATS, None)
 }
