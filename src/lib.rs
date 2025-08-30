@@ -35,6 +35,7 @@ const RELOAD: &[u8; 8] = b"zRELOAD\0";
 const VERSION: &[u8; 9] = b"zVERSION\0";
 const SHUTDOWN: &[u8; 10] = b"zSHUTDOWN\0";
 const INSTREAM: &[u8; 10] = b"zINSTREAM\0";
+const STATS: &[u8; 10] = b"zSTATS\0";
 const END_OF_STREAM: &[u8; 4] = &[0, 0, 0, 0];
 
 /// ClamAV's response to a PING request
@@ -306,4 +307,34 @@ pub fn scan_buffer<T: TransportProtocol>(
 pub fn shutdown<T: TransportProtocol>(connection: T) -> IoResult {
     let stream = connection.connect()?;
     send_command(stream, SHUTDOWN, None)
+}
+
+/// Gets the stats from ClamAV
+///
+/// This function establishes a connection to a ClamAV server and sends the
+/// STATS command to it. If the server is available, it responds with its
+/// stats.
+///
+/// # Arguments
+///
+/// * `connection`: The connection type to use - either TCP or a Unix socket connection
+///
+/// # Returns
+///
+/// An [`IoResult`] containing the server's response as a vector of bytes
+///
+/// # Example
+///
+/// ```
+/// 
+/// # fn main() {
+/// let clamd_tcp = clamav_client::Tcp{ host_address: "localhost:3310" };
+/// let stats = clamav_client::get_stats(clamd_tcp).await.unwrap();
+/// # assert!(stats.starts_with(b"ClamAV"));
+/// # }
+/// ```
+///
+pub fn get_stats<T: TransportProtocol>(connection: T) -> IoResult {
+    let stream = connection.connect().await?;
+    send_command(stream, STATS, None).await
 }

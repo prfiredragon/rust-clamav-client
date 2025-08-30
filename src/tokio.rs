@@ -13,7 +13,7 @@ use tokio_stream::{Stream, StreamExt};
 
 use super::{
     IoResult, DEFAULT_CHUNK_SIZE, END_OF_STREAM, INSTREAM, PING, PONG, RELOAD, RELOADING, SHUTDOWN,
-    VERSION,
+    VERSION, STATS,
 };
 
 async fn send_command<RW: AsyncRead + AsyncWrite + Unpin>(
@@ -323,4 +323,34 @@ pub async fn scan_stream<
 pub async fn shutdown<T: TransportProtocol>(connection: T) -> IoResult {
     let stream = connection.connect().await?;
     send_command(stream, SHUTDOWN, None).await
+}
+
+/// Gets the stats from ClamAV
+///
+/// This function establishes a connection to a ClamAV server and sends the
+/// STATS command to it. If the server is available, it responds with its
+/// stats.
+///
+/// # Arguments
+///
+/// * `connection`: The connection type to use - either TCP or a Unix socket connection
+///
+/// # Returns
+///
+/// An [`IoResult`] containing the server's response as a vector of bytes
+///
+/// # Example
+///
+/// ```
+/// # #[tokio::main(flavor = "current_thread")]
+/// # async fn main() {
+/// let clamd_tcp = clamav_client::tokio::Tcp{ host_address: "localhost:3310" };
+/// let stats = clamav_client::tokio::get_stats(clamd_tcp).await.unwrap();
+/// # assert!(stats.starts_with(b"ClamAV"));
+/// # }
+/// ```
+///
+pub async fn get_stats<T: TransportProtocol>(connection: T) -> IoResult {
+    let stream = connection.connect().await?;
+    send_command(stream, STATS, None).await
 }
