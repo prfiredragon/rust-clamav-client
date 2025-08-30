@@ -35,7 +35,7 @@ const RELOAD: &[u8; 8] = b"zRELOAD\0";
 const VERSION: &[u8; 9] = b"zVERSION\0";
 const SHUTDOWN: &[u8; 10] = b"zSHUTDOWN\0";
 const INSTREAM: &[u8; 10] = b"zINSTREAM\0";
-const STATS: &[u8; 8] = b"zSTATS\0";
+const STATS: &[u8; 7] = b"zSTATS\0";
 const END_OF_STREAM: &[u8; 4] = &[0, 0, 0, 0];
 
 /// ClamAV's response to a PING request
