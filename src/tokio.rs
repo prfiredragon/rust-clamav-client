@@ -1,7 +1,8 @@
 use std::path::Path;
 use tokio::{
+    fs,
     fs::File,
-    io::{self, AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt},
+    io::{self, AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt, Error, ErrorKind},
     net::{TcpStream, ToSocketAddrs},
 };
 
@@ -251,6 +252,10 @@ pub async fn scan_file<P: AsRef<Path>, T: TransportProtocol>(
     connection: T,
     chunk_size: Option<usize>,
 ) -> IoResult {
+    // Check if the file exists
+    if !fs::metadata(&file_path).await.is_ok() {
+        return Err(Error::new(ErrorKind::NotFound, "File does not exist"));
+    }
     let file = File::open(file_path).await?;
     let stream = connection.connect().await?;
     scan(file, chunk_size, stream).await
